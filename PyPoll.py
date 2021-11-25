@@ -11,28 +11,63 @@ import os
 # Assign variable for the file to load and the path
 file_to_load = os.path.join("Resources","election_results.csv")
 
+#initialize vote counter
+total_votes = 0
+
+#initialize winning candidate and vote tracker
+winning_candidate=""
+winning_count=0
+winning_percentage=0
+
+#create candidate list and votes dictionary
+candidate_options = []
+candidate_votes = {}
+
+
+
 # Open the election results and read the file
 
     # the old metho is: election_data = open(file_to_load, 'r')
     # The problem with this method is that files can be damaged if not closed at the end of the script. Using With prevents this
 
 with open(file_to_load) as election_data:
-# To Do: Perform analysis
-    #print(election_data)
-    #To Do: read and analyze the data here
-    
     #read file with reader function
     file_reader = csv.reader(election_data)
     
-    #print the header row
+    #Assign the header row
     headers = next(file_reader)
-    print(headers)
     
-    #for row in file_reader:
-     #       print(row)
+    #loop through rows in CSV
+    for row in file_reader:
+        #add to vote tally
+        total_votes += 1
+        #add to candidate options
+        candidate_name=row[2]
+        
+        #add candidate if req'd
+        if candidate_name not in candidate_options:
+            candidate_options.append(candidate_name)
+            candidate_votes[candidate_name]=0
+        
+        #add vote tally per candidate
+        candidate_votes[candidate_name]+=1
 
-# Close file
-election_data.close()
-
+    for candidate_name in candidate_options:
+        votes = candidate_votes[candidate_name]
+        percentage_votes = votes/total_votes
+        print(f"{candidate_name}: {percentage_votes:.1%} ({votes:,})\n")
+        
+        if (votes>winning_count) and (percentage_votes>winning_percentage):
+            winning_percentage=percentage_votes
+            winning_count=votes
+            winning_candidate=candidate_name
+    winning_candidate_sumary =(
+        f"------------------------\n"
+        f"Winner: {winning_candidate}\n"
+        f"Winning Vote Count: {winning_count:,}\n"
+        f"Winning Vote Percentage: {winning_percentage:.1%}\n"
+        f"------------------------\n"
+    )
+    print(winning_candidate_sumary)
 
 
